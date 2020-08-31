@@ -70,7 +70,6 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
-	 * @param locations 传入参数类型： classpath:/applicationContext.xml
 	 * Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
@@ -79,7 +78,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
-				this.configLocations[i] = resolvePath(locations[i]).trim(); // 如果传入的是多个路径，向数组中添加值。
+				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}
 		else {
@@ -123,7 +122,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)
 	 */
 	protected String resolvePath(String path) {
-		return getEnvironment().resolveRequiredPlaceholders(path); // 解析占位符 ${}
+		return getEnvironment().resolveRequiredPlaceholders(path);
 	}
 
 
