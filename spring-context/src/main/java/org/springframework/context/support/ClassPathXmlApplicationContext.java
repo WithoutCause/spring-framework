@@ -76,6 +76,8 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 	/**
+	 * 我们手动创建容器一般会使用该方法，将传入一个 xml 文件的路径。
+	 *
 	 * Create a new ClassPathXmlApplicationContext, loading the definitions
 	 * from the given XML file and automatically refreshing the context.
 	 * @param configLocation resource location
@@ -124,6 +126,11 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 	/**
+	 * 真正执行的构造器方法，
+	 * configLocations：传入的 xml 文件路径，可以传入多个。
+	 * refresh:是否刷新容器，默认是 true
+	 * parent: 父容器
+	 *
 	 * Create a new ClassPathXmlApplicationContext with the given parent,
 	 * loading the definitions from the given XML files.
 	 * @param configLocations array of resource locations
@@ -138,10 +145,10 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
 
-		super(parent);
-		setConfigLocations(configLocations);
+		super(parent);  // 调用一系列父类的构造器，最终调到 AbstractApplicationContext 的构造器
+		setConfigLocations(configLocations);  // 设置 xml 文件的路径
 		if (refresh) {
-			refresh();
+			refresh(); // 刷新容器
 		}
 	}
 

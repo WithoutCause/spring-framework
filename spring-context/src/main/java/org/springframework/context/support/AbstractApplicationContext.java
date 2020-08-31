@@ -215,6 +215,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Nullable
 	private Thread shutdownHook;
 
+	/*
+	 * 在 new 容器的时候，会将该资源初始化
+	 */
 	/** ResourcePatternResolver used by this context. */
 	private ResourcePatternResolver resourcePatternResolver;
 
@@ -249,7 +252,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Create a new AbstractApplicationContext with no parent.
 	 */
 	public AbstractApplicationContext() {
-		this.resourcePatternResolver = getResourcePatternResolver();
+		this.resourcePatternResolver = getResourcePatternResolver(); // 获取资源解析器
 	}
 
 	/**
@@ -258,7 +261,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	public AbstractApplicationContext(@Nullable ApplicationContext parent) {
 		this();
-		setParent(parent);
+		setParent(parent); // parent 默认为 null, 设置当前的 parent 参数为 null
 	}
 
 
@@ -489,7 +492,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.core.io.support.PathMatchingResourcePatternResolver
 	 */
 	protected ResourcePatternResolver getResourcePatternResolver() {
-		return new PathMatchingResourcePatternResolver(this);
+		return new PathMatchingResourcePatternResolver(this); // 该解析器支持 Ant 风格，简单的 url 协议。例如：file:// 这种也可以解析。 同时传入 resourceLoader
 	}
 
 
