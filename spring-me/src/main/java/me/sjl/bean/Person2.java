@@ -1,12 +1,13 @@
 package me.sjl.bean;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class Person implements BeanPostProcessor {
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
+public class Person2 implements BeanPostProcessor {
 
 	private String name;
 
@@ -30,13 +31,13 @@ public class Person implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		System.out.println("person before 方法开始执行……");
+		System.out.println("person2 before 方法开始执行……");
 		return bean;
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		System.out.println("person after 方法开始执行……");
+		System.out.println("person2 after 方法开始执行……");
 		return bean;
 	}
 }
