@@ -577,7 +577,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
-				// 调用 BeanFactoryPostProcessor 后处理器
+				// 调用 BeanFactoryPostProcessor 后处理器, 实现了接口 BeanFactoryPostProcessor 接口的 bean
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
@@ -710,7 +710,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		// 设置 bean 类加载器
 		beanFactory.setBeanClassLoader(getClassLoader());
+		// SPEL 是否使用可配置，默认是 false，不禁用。
 		if (!shouldIgnoreSpel) {
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}

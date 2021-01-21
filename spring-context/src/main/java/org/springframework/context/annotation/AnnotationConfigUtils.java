@@ -235,31 +235,42 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, AnnotatedTypeMetadata metadata) {
+		// 判断是否包含 @Lazy 注解
 		AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);
 		if (lazy != null) {
+			// 取 value 的值， @Lazy 的 value 只能为 true-懒加载 或 false-不懒加载
 			abd.setLazyInit(lazy.getBoolean("value"));
 		}
+		// AnnotatedBeanDefinition 元数据和 传入的元数据不相等，个人觉得不太可能。重新判断一次 @Lazy 注解
 		else if (abd.getMetadata() != metadata) {
 			lazy = attributesFor(abd.getMetadata(), Lazy.class);
 			if (lazy != null) {
+				// 取 value 的值， @Lazy 的 value 只能为 true-懒加载 或 false-不懒加载
 				abd.setLazyInit(lazy.getBoolean("value"));
 			}
 		}
 
+		// 是否包含 @Primary 注解, @Primary 没有属性，打上该注解标记着该 Bean 为主bean
 		if (metadata.isAnnotated(Primary.class.getName())) {
 			abd.setPrimary(true);
 		}
+		// 是否包含 @DependsOn 注解
 		AnnotationAttributes dependsOn = attributesFor(metadata, DependsOn.class);
 		if (dependsOn != null) {
+			// 取出所依赖的 bean 名称
 			abd.setDependsOn(dependsOn.getStringArray("value"));
 		}
 
+		// 是否包含 @Role 注解 todo 研究这个作用
 		AnnotationAttributes role = attributesFor(metadata, Role.class);
 		if (role != null) {
+			// 取出 value 属性的值
 			abd.setRole(role.getNumber("value").intValue());
 		}
+		// 是否包含 @Description 注解
 		AnnotationAttributes description = attributesFor(metadata, Description.class);
 		if (description != null) {
+			// 取出注解的属性
 			abd.setDescription(description.getString("value"));
 		}
 	}

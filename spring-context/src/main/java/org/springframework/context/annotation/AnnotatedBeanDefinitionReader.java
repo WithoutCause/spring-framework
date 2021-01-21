@@ -126,6 +126,7 @@ public class AnnotatedBeanDefinitionReader {
 
 
 	/**
+	 * 如果传入的是多个配置类，循环注册 bean。
 	 * Register one or more component classes to be processed.
 	 * <p>Calls to {@code register} are idempotent; adding the same
 	 * component class more than once has no additional effect.
