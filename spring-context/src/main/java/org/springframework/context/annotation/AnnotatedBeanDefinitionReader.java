@@ -34,6 +34,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 读取 Bean 注解的注解读取器
  * Convenient adapter for programmatic registration of bean classes.
  *
  * <p>This is an alternative to {@link ClassPathBeanDefinitionScanner}, applying
@@ -85,6 +86,7 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		// 委托 AnnotationConfigUtils.registerAnnotationConfigProcessors
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -145,6 +147,7 @@ public class AnnotatedBeanDefinitionReader {
 	 * @param beanClass the class of the bean
 	 */
 	public void registerBean(Class<?> beanClass) {
+		//委托给 doRegisterBean() 方法执行具体的逻辑
 		doRegisterBean(beanClass, null, null, null, null);
 	}
 
@@ -251,17 +254,26 @@ public class AnnotatedBeanDefinitionReader {
 			@Nullable Class<? extends Annotation>[] qualifiers, @Nullable Supplier<T> supplier,
 			@Nullable BeanDefinitionCustomizer[] customizers) {
 
+		// 配置类的 Class 对象转成 BeanDefinition
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+		/* 该类是否为配置类, 不是配置类就跳过， 判断逻辑如下:
+		 * 1. 是否有标记 Conditional 注解
+		 * 2. 有 @Component，@ComponentScan，@Import，@ImportResource 注解
+		 * 3. 是否包含 @Bean 注解
+		 */
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
 
 		abd.setInstanceSupplier(supplier);
+		// 解析 scope, 在 ConfigurableBeanFactory 中定义了 singleton 和 prototype 两个 scope 对应的常量， 其他三种类型在 WebApplicationContext 中定义
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
+		// 处理公共注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		// qualifiers 处理, todo qualifiers 是个神奇的东西。。。 ^_^
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -275,14 +287,17 @@ public class AnnotatedBeanDefinitionReader {
 				}
 			}
 		}
+		// 自定义的 BeanDefinitionCustomizer 处理。目前为止，还没有见到过在这里自定义的操作。。。
 		if (customizers != null) {
 			for (BeanDefinitionCustomizer customizer : customizers) {
 				customizer.customize(abd);
 			}
 		}
 
+		// 解析 scope 是否需要代理
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		// 注册 BeanDefinition
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 
@@ -294,6 +309,7 @@ public class AnnotatedBeanDefinitionReader {
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		if (registry instanceof EnvironmentCapable) {
+			// 获取环境，初始化时会创建
 			return ((EnvironmentCapable) registry).getEnvironment();
 		}
 		return new StandardEnvironment();
